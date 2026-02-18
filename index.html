@@ -155,19 +155,18 @@
     .tval{ font-size: 22px; font-weight:1000; }
     .tlabel{ margin-top: 4px; font-size: 11px; color: rgba(255,255,255,.70); font-weight:900; letter-spacing:1px; text-transform:uppercase; }
 
-    /* تعديل: شريط مربعات رمضان - إصلاح ظهور المربعات */
     .ramadan-days-container {
         width: 100%;
         margin-top: 15px;
         overflow-x: auto;
         overflow-y: visible; 
-        padding: 15px 10px 25px; /* زيادة مساحة الهوامش عشان ميبقاش مقصوص */
+        padding: 15px 10px 25px; 
         display: flex;
         gap: 16px;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
         position: relative;
-        min-height: 200px; /* ضمان وجود مساحة كافية للظهور */
+        min-height: 200px;
     }
     .ramadan-days-container::-webkit-scrollbar { display: none; }
     
@@ -529,8 +528,8 @@
     const PASSWORD = "1";
     const STORY_START = new Date("2022-02-14T00:00:00"); 
     
-    // إعدادات رمضان (تقدر تغير السنة واليوم هنا)
-    const RAMADAN_START_DATE = new Date("2026-03-01T00:00:00"); 
+    // إعدادات رمضان: 19 فبراير هو أول يوم
+    const RAMADAN_START_DATE = new Date("2026-02-19T00:00:00"); 
 
     const page1 = document.getElementById("page1");
     const page2 = document.getElementById("page2");
@@ -543,21 +542,21 @@
 
     // رسائل الـ 30 يوم
     const ramadanMessages = [
-        "أول يوم رمضان: ربنا يتقبل منك صالح الأعمال يا حبيبتي.",
-        "تاني يوم رمضان: ضحكتك في الفطار هي اللي بتفتح نفسي.",
-        "تالت يوم رمضان: دعيتلك في كل سجدة النهاردة.",
-        "رابع يوم رمضان: منورة أيامي زي ما الفانوس منور بيتنا.",
-        "خامس يوم رمضان: كل سنة وانتي في قلبي.",
-        "سادس يوم رمضان: انتي السكر اللي بيحلي أيامي الصعبة.",
+        "أول يوم رمضان: رمضان بدأ وانتي منورة دنيتي، ربنا يتقبل صيامك يا حبيبتي.",
+        "تاني يوم رمضان: كل سنة واحنا مع بعض، ضحكتك أحلى من أي فطار.",
+        "تالت يوم رمضان: دعيتلك في كل سجدة النهاردة ربنا يحميكي ليا.",
+        "رابع يوم رمضان: منورة أيامي زي ما الفانوس منور بيتنا الصغير.",
+        "خامس يوم رمضان: انتي السكر اللي بيحلي أيامي الصعبة.. صوماً مقبولاً.",
+        "سادس يوم رمضان: كل ساعة وانتي أقرب لقلبي وأغلى ما فيه.",
         "سابع يوم رمضان: ربنا يديمك نعمة في حياتي يا أغلى الناس.",
-        "ثامن يوم رمضان: صيام مقبول وإفطار شهي يا ست البنات.",
-        "تاسع يوم رمضان: كل ساعة وانتي أقرب لقلبي.",
-        "عاشر يوم رمضان: خلصت أول 10 أيام وانتي لسه منورة حياتي."
+        "ثامن يوم رمضان: وشك فيه نور وهدوء زي ليالي رمضان الجميلة.",
+        "تاسع يوم رمضان: بكرة أحلى وانتي جنبي، رمضانك جنة.",
+        "عاشر يوم رمضان: خلصت أول 10 أيام وانتي لسه ملكة قلبي."
     ];
 
     const dayIcons = [
       "fa-moon", "fa-star", "fa-kaaba", "fa-mosque", "fa-fan", "fa-heart", 
-      "fa-sun", "fa-lightbulb", "fa-hands-praying", "fa-dove", "fa-mandalas"
+      "fa-sun", "fa-lightbulb", "fa-hands-praying", "fa-dove"
     ];
 
     function showToast(){
@@ -630,7 +629,7 @@
     function generateRamadanDays() {
         const container = document.getElementById("ramadanScroll");
         container.innerHTML = "";
-        const now = new Date();
+        const now = new Date(); 
 
         for (let i = 1; i <= 30; i++) {
             const dayCard = document.createElement("div");
@@ -639,18 +638,19 @@
             const dayDate = new Date(RAMADAN_START_DATE);
             dayDate.setDate(dayDate.getDate() + (i - 1));
             
-            // تعديل: أول يوم مفتوح دايماً، الباقي حسب التاريخ
+            // يوم 1 (19 فبراير) هيفضل مفتوح دايماً
+            // باقي الأيام بتفتح مع تاريخها الفعلي
             let isLocked = now < dayDate;
             if (i === 1) isLocked = false; 
 
             const isToday = now.toDateString() === dayDate.toDateString();
-            const icon = dayIcons[i % dayIcons.length];
+            const icon = dayIcons[(i-1) % dayIcons.length];
 
             if (isLocked) dayCard.classList.add("locked");
-            if (isToday || (i === 1 && now < dayDate)) dayCard.classList.add("active-day");
+            if (isToday) dayCard.classList.add("active-day");
 
             dayCard.innerHTML = `
-                <div class="day-status">${isLocked ? "مقفول" : "متاح الآن"}</div>
+                <div class="day-status">${isLocked ? "مقفول" : (isToday ? "متاح الآن" : "تم فتحه")}</div>
                 <div class="day-icon-wrap">
                   <i class="fa-solid ${isLocked ? 'fa-lock' : icon}"></i>
                 </div>
@@ -659,7 +659,7 @@
 
             dayCard.onclick = () => {
                 if (isLocked) {
-                    showCustomMessage("لسه شوية 🌙", "المربع ده هيفتح في وقته يا ست البنات.. استني المفاجأة ✨");
+                    showCustomMessage("لسه شوية 🌙", "المربع ده هيفتح في ميعاده يا ست البنات.. استني مفاجأة كل يوم ✨");
                 } else {
                     const msg = ramadanMessages[i-1] || `يوم ${i} رمضان: كل سنة وانتي منورة دنيتي يا قمر! 🌙`;
                     showCustomMessage(`رسالة يوم ${i} رمضان 💌`, msg);
